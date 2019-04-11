@@ -211,7 +211,7 @@ public class ChannelListLayout extends LinearLayout implements View.OnClickListe
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        Log.d("tifone", "diffx action= " + ev.getAction());
+        Log.d("tifone", "onInterceptTouchEvent action= " + ev.getAction());
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 lastX = ev.getRawX();
@@ -221,17 +221,18 @@ public class ChannelListLayout extends LinearLayout implements View.OnClickListe
                 float diffY = ev.getRawY() - lastY;
                 float diffX = ev.getRawX() - lastX;
                 Log.d("tifone", "diffx = " + diffX);
-                xDistance += diffX;
-                if (Math.abs(xDistance) > getWidth()/10) {
-                    requestDisallowInterceptTouchEvent(true);
+                Log.d("tifone", "onInterceptTouchEvent xDistance" + xDistance);
+                if (Math.abs(diffX) > Math.abs(diffY)) {
                     break;
                 }
                 if (diffY > 0) {
                     if (isListScrollToTop()) {
+                        Log.d("tifone", "onInterceptTouchEvent intercept");
                         return true;
                     }
                 } else  {
-                    if (isListScrollToBottom()) {
+                    if (isListScrollToBottom() && !isListScrollToTop()) {
+                        Log.d("tifone", "onInterceptTouchEvent intercept");
                         return true;
                     }
                 }
@@ -241,6 +242,35 @@ public class ChannelListLayout extends LinearLayout implements View.OnClickListe
                 break;
         }
         return super.onInterceptTouchEvent(ev);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+
+        Log.d("tifone", " dispatchTouchEvent = " + ev.getAction());
+        if (ev.getAction() == MotionEvent.ACTION_UP) {
+            requestDisallowInterceptTouchEvent(false);
+        }
+        if (ev.getAction() == MotionEvent.ACTION_MOVE) {
+            float diffY = ev.getRawY() - lastY;
+            float diffX = ev.getRawX() - lastX;
+            Log.d("tifone", "diffx = " + diffX);
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                return super.dispatchTouchEvent(ev);
+            }
+            if (diffY > 0) {
+                if (isListScrollToTop()) {
+                    Log.d("tifone", "dispatchTouchEvent dispatch");
+                    return super.dispatchTouchEvent(ev);
+                }
+            } else  {
+                if (isListScrollToBottom()) {
+                    Log.d("tifone", "dispatchTouchEvent dispatch2");
+                    return super.dispatchTouchEvent(ev);
+                }
+            }
+        }
+        return super.dispatchTouchEvent(ev);
     }
 
     private boolean needIntercept() {
@@ -260,9 +290,6 @@ public class ChannelListLayout extends LinearLayout implements View.OnClickListe
     public boolean onTouchEvent(MotionEvent event) {
         Log.d("tifone", "action = " + event.getAction());
         if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            if (Math.abs(event.getRawX() - lastX ) > getWidth() / 10) {
-                return super.onTouchEvent(event);
-            }
             float currentY = event.getRawY();
             float diff = currentY - lastY;
             onHeaderDragged(-diff);
