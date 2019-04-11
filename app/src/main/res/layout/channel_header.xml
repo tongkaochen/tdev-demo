@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/channel_header"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp">
+
+    <TextView
+        android:id="@+id/all_channel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:text="All channel"/>
+    <TextView
+        android:id="@+id/favourite_channel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/all_channel"
+        android:layout_marginStart="24dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:text="Favourite channel"/>
+
+    <TextView
+        android:id="@+id/scan_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/bg_scan_btn"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:text="Scan"/>
+
+    <com.tifone.tdev.demo.fm.channel.SlideIndicator
+        android:id="@+id/slide_indicator"
+        android:layout_below="@id/all_channel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>
