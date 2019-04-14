@@ -6,7 +6,6 @@
 
     <com.tifone.tdev.demo.fm.channel.ChannelListLayout
         android:id="@+id/channel_layout"
-        android:background="#aaaa00"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
