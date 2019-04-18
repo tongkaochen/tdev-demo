@@ -1,12 +1,8 @@
 package com.tifone.tdev.demo.fm.channel;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.os.HandlerThread;
 import android.support.annotation.Nullable;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -28,7 +24,7 @@ public class ChannelListLayout extends LinearLayout implements View.OnClickListe
     private SlideIndicator mIndicator;
     private TextView mAllChannelTv;
     private TextView mFavouriteChannelTv;
-    private View mChannelHeader;
+    private ChannelHeaderLayout mChannelHeader;
     private ViewPager mViewPager;
     private ChannelPagerAdapter mAdapter;
     private int mLastPosition;
@@ -38,7 +34,6 @@ public class ChannelListLayout extends LinearLayout implements View.OnClickListe
     private boolean isInitStatus;
     private float lastY;
     private float lastX;
-    private float xDistance;
 
     public ChannelListLayout(Context context) {
         this(context, null);
@@ -55,7 +50,7 @@ public class ChannelListLayout extends LinearLayout implements View.OnClickListe
 
     private void init() {
         LayoutInflater inflater = LayoutInflater.from(getContext());
-        mChannelHeader = inflater.inflate(R.layout.channel_header, null);
+        mChannelHeader = (ChannelHeaderLayout) inflater.inflate(R.layout.channel_header, null);
         mViewPager = (ViewPager) inflater.inflate(R.layout.view_pager, null);
         setupViewPager();
         mIndicator = mChannelHeader.findViewById(R.id.slide_indicator);
@@ -220,15 +215,20 @@ public class ChannelListLayout extends LinearLayout implements View.OnClickListe
             case MotionEvent.ACTION_MOVE:
                 float diffY = ev.getRawY() - lastY;
                 float diffX = ev.getRawX() - lastX;
-                Log.d("tifone", "diffx = " + diffX);
-                Log.d("tifone", "onInterceptTouchEvent xDistance" + xDistance);
+                Log.d("tifone", "diffx = " + diffX + " diffY" + diffY);
                 if (Math.abs(diffX) > Math.abs(diffY)) {
                     break;
                 }
                 if (diffY > 0) {
                     if (isListScrollToTop()) {
                         Log.d("tifone", "onInterceptTouchEvent intercept");
-                        return true;
+                        if (isListScrollToBottom()) {
+                            if (isExpanded()) {
+                                return true;
+                            }
+                        } else {
+                            return true;
+                        }
                     }
                 } else  {
                     if (isListScrollToBottom() && !isListScrollToTop()) {
@@ -236,47 +236,25 @@ public class ChannelListLayout extends LinearLayout implements View.OnClickListe
                         return true;
                     }
                 }
+                if (mChannelHeader.needInterceptByParent() && !isListDisplayAll()) {
+                    Log.d("tifone", "onInterceptTouchEvent intercept3");
+                    return true;
+                }
                 break;
             case MotionEvent.ACTION_UP:
-                xDistance = 0;
                 break;
         }
-        return super.onInterceptTouchEvent(ev);
+        return false;
     }
 
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-
-        Log.d("tifone", " dispatchTouchEvent = " + ev.getAction());
-        if (ev.getAction() == MotionEvent.ACTION_UP) {
-            requestDisallowInterceptTouchEvent(false);
-        }
-        if (ev.getAction() == MotionEvent.ACTION_MOVE) {
-            float diffY = ev.getRawY() - lastY;
-            float diffX = ev.getRawX() - lastX;
-            Log.d("tifone", "diffx = " + diffX);
-            if (Math.abs(diffX) > Math.abs(diffY)) {
-                return super.dispatchTouchEvent(ev);
-            }
-            if (diffY > 0) {
-                if (isListScrollToTop()) {
-                    Log.d("tifone", "dispatchTouchEvent dispatch");
-                    return super.dispatchTouchEvent(ev);
-                }
-            } else  {
-                if (isListScrollToBottom()) {
-                    Log.d("tifone", "dispatchTouchEvent dispatch2");
-                    return super.dispatchTouchEvent(ev);
-                }
-            }
-        }
-        return super.dispatchTouchEvent(ev);
+    private boolean isExpanded() {
+        return getHeight() >= maxHeight;
     }
 
-    private boolean needIntercept() {
-        ChannelList current = mAdapter.getItem(mViewPager.getCurrentItem());
-        return current.isScrollToBottom() || current.isScrollToTop();
+    private boolean isListDisplayAll() {
+        return isListScrollToBottom() && isListScrollToTop();
     }
+
     private boolean isListScrollToTop() {
         ChannelList current = mAdapter.getItem(mViewPager.getCurrentItem());
         return current.isScrollToTop();
@@ -300,7 +278,7 @@ public class ChannelListLayout extends LinearLayout implements View.OnClickListe
             onDragRelease();
             return true;
         }
-        return super.onTouchEvent(event);
+        return mViewPager.onTouchEvent(event) | mChannelHeader.onTouchEvent(event);
     }
 
     public boolean requestScrollToBottom() {

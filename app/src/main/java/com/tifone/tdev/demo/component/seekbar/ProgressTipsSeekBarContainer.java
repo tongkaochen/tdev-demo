@@ -3,40 +3,51 @@ package com.tifone.tdev.demo.component.seekbar;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
-import android.app.Activity;
-import android.os.Bundle;
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.tifone.tdev.demo.R;
 
-/**
- * Create by Tifone on 2019/4/14.
- */
-public class SeekBarLayoutActivity extends Activity implements SeekBar.OnSeekBarChangeListener {
+public class ProgressTipsSeekBarContainer implements SeekBar.OnSeekBarChangeListener {
+    private final ViewGroup mProgressTipsLayout;
+    private final TextView mProgressTv;
+    private Context mContext;
     private SeekBar mSeekBar;
-    private TextView mProgressShowTv;
-    private FrameLayout mProgressTipsLayout;
+    private View mRoot;
     private boolean mVisibility;
     private ValueAnimator mAnimator;
-    private ViewGroup mSeekBarContainer;
+    private SeekBar.OnSeekBarChangeListener mListener;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.seekbar_layout);
-        mSeekBar = findViewById(R.id.demo_seek_bar);
-        mProgressShowTv = findViewById(R.id.progress_show_tv);
-        mProgressTipsLayout =findViewById(R.id.progress_tips_layout);
+    public ProgressTipsSeekBarContainer(Context context) {
+        mContext = context;
+        LayoutInflater inflater = LayoutInflater.from(context);
+        mRoot = inflater.inflate(R.layout.progress_tips_layout, null);
+        mSeekBar = mRoot.findViewById(R.id.seek_bar);
         mSeekBar.setOnSeekBarChangeListener(this);
-        mProgressTipsLayout.setVisibility(View.INVISIBLE);
-        mSeekBarContainer = findViewById(R.id.seek_bar_container);
 
-        ProgressTipsSeekBarContainer container = new ProgressTipsSeekBarContainer(this);
-        container.attachTo(mSeekBarContainer);
+        mProgressTv = mRoot.findViewById(R.id.progress_tv);
+        mProgressTipsLayout = mRoot.findViewById(R.id.progress_tips_layout);
+        mProgressTipsLayout.setVisibility(View.INVISIBLE);
+    }
+    public void setOnSeekBarChangedListenner(SeekBar.OnSeekBarChangeListener listener) {
+        mListener = listener;
+    }
+    public SeekBar getSeekBar() {
+        return mSeekBar;
+    }
+    public void attachTo(ViewGroup parent) {
+        if (parent == null) {
+            return;
+        }
+        ViewGroup seekRootParent = (ViewGroup) mRoot.getParent();
+        if (seekRootParent != null) {
+            seekRootParent.removeView(mRoot);
+        }
+        parent.addView(mRoot);
     }
 
     private float getLocation(SeekBar seekBar) {
@@ -45,13 +56,12 @@ public class SeekBarLayoutActivity extends Activity implements SeekBar.OnSeekBar
         int thumbWidth = seekBar.getThumb().getIntrinsicWidth() - seekBar.getThumbOffset();
         return seekBar.getX() + seekBarWidth * progressRatio;
     }
-
     private void updateTipsViewDisplay(boolean visibility) {
         mProgressTipsLayout.setPivotX(mProgressTipsLayout.getWidth() / 2.0f);
         mProgressTipsLayout.setPivotY(mProgressTipsLayout.getHeight());
         float location = getLocation(mSeekBar);
 
-        mProgressShowTv.setText(String.valueOf(mSeekBar.getProgress()));
+        mProgressTv.setText(String.valueOf(mSeekBar.getProgress()));
         if (mVisibility != visibility) {
             applyAnimation(visibility);
         }
@@ -105,12 +115,18 @@ public class SeekBarLayoutActivity extends Activity implements SeekBar.OnSeekBar
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if (mListener != null) {
+            mListener.onProgressChanged(seekBar, progress, fromUser);
+        }
         seekBar.removeCallbacks(runnable);
         updateTipsViewDisplay(true);
     }
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
+        if (mListener != null) {
+            mListener.onStartTrackingTouch(seekBar);
+        }
         seekBar.removeCallbacks(runnable);
         updateTipsViewDisplay(true);
     }
@@ -123,6 +139,9 @@ public class SeekBarLayoutActivity extends Activity implements SeekBar.OnSeekBar
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
+        if (mListener != null) {
+            mListener.onStopTrackingTouch(seekBar);
+        }
         seekBar.removeCallbacks(runnable);
         seekBar.postDelayed(runnable, 800);
     }

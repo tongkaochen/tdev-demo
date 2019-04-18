@@ -18,6 +18,7 @@
         </activity>
         <activity android:name=".fm.channel.ChannelDemoActivity" />
         <activity android:name=".component.seekbar.SeekBarLayoutActivity" />
+        <activity android:name=".nestedview.NestViewDemoActivity" />
     </application>
 
 </manifest>

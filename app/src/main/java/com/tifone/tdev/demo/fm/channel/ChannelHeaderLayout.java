@@ -5,11 +5,18 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.tifone.tdev.demo.R;
 
 public class ChannelHeaderLayout extends RelativeLayout {
     private float lastY;
     private float totalDistance;
-    private DragHeaderCallback mCallback;
+    private TextView mAllChannelTv;
+    private TextView mFavouriteChannelTv;
+    private TextView mScanButton;
+    private boolean needInterceptByParent;
+
     public ChannelHeaderLayout(Context context) {
         super(context);
     }
@@ -23,6 +30,14 @@ public class ChannelHeaderLayout extends RelativeLayout {
     }
 
     @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        mAllChannelTv = findViewById(R.id.all_channel);
+        mFavouriteChannelTv = findViewById(R.id.favourite_channel);
+        mScanButton = findViewById(R.id.scan_btn);
+    }
+
+    @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         Log.d("tifone", "intercept event " + ev.getAction());
         switch (ev.getAction()) {
@@ -30,44 +45,36 @@ public class ChannelHeaderLayout extends RelativeLayout {
                 lastY = ev.getRawY();
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (Math.abs(ev.getRawY() - lastY) > getHeight() / 3) {
-                    return true;
-                }
+                needInterceptByParent = true;
+                return false;
         }
         return super.onInterceptTouchEvent(ev);
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        //Log.d("tifone", "touchevent " + event.getAction());
-        if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            float currentY = event.getRawY();
-            Log.d("tifone", "drag.... lastY = " + lastY + " currenY = " + currentY);
-            float diff = currentY - lastY;
-            totalDistance += diff;
-            if (diff > 0) {
-                Log.d("tifone", "drag down, " + diff + " total :" + totalDistance);
-            } else {
-                Log.d("tifone", "drag up " + diff +  " total :" + totalDistance);
-            }
-            if (mCallback != null) {
-                mCallback.onHeaderDragged(-diff);
-            }
-            lastY = currentY;
-            return true;
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_UP
+                || ev.getAction() == MotionEvent.ACTION_CANCEL
+                || ev.getAction() == MotionEvent.ACTION_DOWN) {
+            needInterceptByParent = false;
         }
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-            if (mCallback != null) {
-                mCallback.onDragRelease();
-            }
+        return super.dispatchTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        Log.d("tifone", "Header touch " + event.getAction());
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                return true;
+            case MotionEvent.ACTION_MOVE:
+                return false;
         }
         return super.onTouchEvent(event);
     }
-    public void setDragHeaderCallback(DragHeaderCallback callback) {
-        mCallback = callback;
-    }
-    interface DragHeaderCallback {
-        void onHeaderDragged(float diff);
-        void onDragRelease();
+
+    public boolean needInterceptByParent() {
+        return needInterceptByParent;
     }
 }

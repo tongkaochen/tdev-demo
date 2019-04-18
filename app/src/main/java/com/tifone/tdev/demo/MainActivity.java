@@ -13,6 +13,7 @@ import android.widget.Button;
 
 import com.tifone.tdev.demo.component.seekbar.SeekBarLayoutActivity;
 import com.tifone.tdev.demo.fm.channel.ChannelDemoActivity;
+import com.tifone.tdev.demo.nestedview.NestViewDemoActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.List;
 public class MainActivity extends Activity {
     private List<Target> mTargetList = new ArrayList<>();
     private RecyclerView mRecyclerView;
-    private int focusIndex;
+    private final int focusIndex = 2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,9 +35,12 @@ public class MainActivity extends Activity {
         return new DemoAdapter(mTargetList);
     }
     private void buildTargets() {
-        mTargetList.add(createTarget("Tips SeekBar", SeekBarLayoutActivity.class));
-        mTargetList.add(createTarget("FM channel demo", ChannelDemoActivity.class));
-        focusIndex = 0;
+        addTarget("Tips SeekBar", SeekBarLayoutActivity.class);
+        addTarget("FM channel demo", ChannelDemoActivity.class);
+        addTarget("Nested scroll view", NestViewDemoActivity.class);
+    }
+    private void addTarget(String name, Class clazz) {
+        mTargetList.add(createTarget(name, clazz));
     }
     private Target createTarget(String name, Class clazz) {
         return new Target(name, clazz);

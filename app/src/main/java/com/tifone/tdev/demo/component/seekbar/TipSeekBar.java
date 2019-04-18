@@ -1,6 +1,7 @@
 package com.tifone.tdev.demo.component.seekbar;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.SeekBar;
@@ -21,5 +22,9 @@ public class TipSeekBar extends SeekBar {
         super(context, attrs, defStyleAttr);
     }
 
+    @Override
+    protected synchronized void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
 
+    }
 }
