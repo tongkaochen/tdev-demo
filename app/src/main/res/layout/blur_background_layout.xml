@@ -7,10 +7,10 @@
         android:id="@+id/background"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-    <ImageView
+    <com.tifone.tdev.demo.blurimg.CircleImageView
         android:id="@+id/circle_icon"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_centerInParent="true"
-        android:src="@drawable/blur_src"/>
+        android:src="@drawable/fengjing"/>
 </RelativeLayout>

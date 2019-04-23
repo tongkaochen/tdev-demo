@@ -62,4 +62,5 @@ public class BlurTransaction {
         drawable.draw(canvas);
         return transaction(bitmap);
     }
+
 }

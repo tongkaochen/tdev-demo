@@ -43,10 +43,6 @@ public class BlurImageView extends ImageView {
 
     private void init() {
         mBlurTransation = new BlurTransaction(getContext());
-        Log.d("tifone", "init begin");
-        mRenderScript = RenderScript.create(getContext());
-        mBlurRender = ScriptIntrinsicBlur.create(mRenderScript, Element.U8_4(mRenderScript));
-        Log.d("tifone", "init end");
     }
 
     @Override

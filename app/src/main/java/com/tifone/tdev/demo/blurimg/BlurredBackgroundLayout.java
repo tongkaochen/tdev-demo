@@ -11,6 +11,7 @@ import com.tifone.tdev.demo.R;
 
 public class BlurredBackgroundLayout extends FrameLayout {
     private BlurImageView background;
+    private ImageView centerCircleImage;
 
     public BlurredBackgroundLayout(Context context) {
         super(context);
@@ -27,12 +28,18 @@ public class BlurredBackgroundLayout extends FrameLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.blur_background_layout, null);
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.blur_background_layout, this, false);
         background = view.findViewById(R.id.background);
-        ImageView target = view.findViewById(R.id.circle_icon);
-        if (target.getDrawable() != null) {
-            background.setImageDrawable(target.getDrawable());
+        centerCircleImage = view.findViewById(R.id.circle_icon);
+        if (centerCircleImage.getDrawable() != null) {
+            background.setImageDrawable(centerCircleImage.getDrawable());
         }
         addView(view);
+    }
+    public void setCenterCircleImageVisibility(boolean visibility) {
+        if (centerCircleImage == null) {
+            return;
+        }
+        centerCircleImage.setVisibility(visibility ? VISIBLE : GONE);
     }
 }
