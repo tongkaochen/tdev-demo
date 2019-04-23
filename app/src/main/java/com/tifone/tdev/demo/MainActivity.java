@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.tifone.tdev.demo.blurimg.BlurImageDemoActivity;
 import com.tifone.tdev.demo.component.seekbar.SeekBarLayoutActivity;
 import com.tifone.tdev.demo.fm.channel.ChannelDemoActivity;
 import com.tifone.tdev.demo.nestedview.NestViewDemoActivity;
@@ -21,7 +22,7 @@ import java.util.List;
 public class MainActivity extends Activity {
     private List<Target> mTargetList = new ArrayList<>();
     private RecyclerView mRecyclerView;
-    private final int focusIndex = 2;
+    private final int focusIndex = 3;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +39,7 @@ public class MainActivity extends Activity {
         addTarget("Tips SeekBar", SeekBarLayoutActivity.class);
         addTarget("FM channel demo", ChannelDemoActivity.class);
         addTarget("Nested scroll view", NestViewDemoActivity.class);
+        addTarget("Blur demo", BlurImageDemoActivity.class);
     }
     private void addTarget(String name, Class clazz) {
         mTargetList.add(createTarget(name, clazz));

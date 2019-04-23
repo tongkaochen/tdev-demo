@@ -58,6 +58,10 @@ public class ChannelHeaderLayout extends RelativeLayout {
                 || ev.getAction() == MotionEvent.ACTION_DOWN) {
             needInterceptByParent = false;
         }
+        if (ev.getAction() == MotionEvent.ACTION_MOVE) {
+            needInterceptByParent = true;
+            return false;
+        }
         return super.dispatchTouchEvent(ev);
     }
 
