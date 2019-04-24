@@ -8,15 +8,16 @@ import android.graphics.drawable.Drawable;
  * Create by Tifone on 2019/4/23.
  */
 public class ImageUtil {
-    public static Bitmap changeDrawableToBitmap(Drawable drawable) {
-
-        int sampling = 6;
+    public static Bitmap translateDrawableToBitmap(Drawable drawable) {
+        return translateDrawableToBitmap(drawable, 1);
+    }
+    public static Bitmap translateDrawableToBitmap(Drawable drawable, int sampling) {
         int width = drawable.getIntrinsicWidth();
         int height = drawable.getIntrinsicHeight();
         if (width == -1 || height == -1) {
             return null;
         }
-        // scale bitmap to smaller
+        // scale bitmap with sampling
         drawable.setBounds(0, 0, width, height);
         Bitmap bitmap = Bitmap.createBitmap(width / sampling,
                 height / sampling, Bitmap.Config.ARGB_8888);

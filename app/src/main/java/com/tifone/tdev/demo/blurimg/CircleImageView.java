@@ -9,9 +9,12 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
-import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
+
+import com.tifone.tdev.demo.R;
 
 /**
  * Create by Tifone on 2019/4/23.
@@ -19,6 +22,11 @@ import android.widget.ImageView;
 public class CircleImageView extends ImageView {
     private Paint mPaint;
     private PorterDuffXfermode mMode;
+    private final int strokeWidth = 6;
+    private Drawable mOriginDrawable;
+    private Bitmap mSrcBitmap;
+    private boolean isInternalCall;
+
     public CircleImageView(Context context) {
         this(context, null);
     }
@@ -37,100 +45,95 @@ public class CircleImageView extends ImageView {
         mPaint.setColor(Color.WHITE);
         mMode = new PorterDuffXfermode(PorterDuff.Mode.XOR);
         mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(6);
-
+        mPaint.setStrokeWidth(strokeWidth);
     }
 
     @Override
-    public void onWindowFocusChanged(boolean hasWindowFocus) {
-        super.onWindowFocusChanged(hasWindowFocus);
-        if (hasWindowFocus) {
-            Bitmap bitmap = ImageUtil.changeDrawableToBitmap(getDrawable());
-            bitmap = scaleBitmap(bitmap);
-            bitmap = toRoundBitmap(bitmap);
-            setImageBitmap(bitmap);
+    public Drawable getDrawable() {
+        return mOriginDrawable;
+    }
+
+    @Override
+    public void setImageDrawable(@Nullable Drawable drawable) {
+        super.setImageDrawable(drawable);
+        if (isInternalCall) {
+            isInternalCall = false;
+            return;
         }
+        mOriginDrawable = drawable;
+        clipDrawable();
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-//
-//        int count = canvas.saveLayer(0, 0, getWidth(), getHeight(), mPaint);
-//        canvas.drawRect(0, 0, getWidth(), getHeight(), mPaint);
-//        mPaint.setXfermode(mMode);
-        canvas.drawCircle(getWidth() / 2.0f, getHeight() / 2.0f, getWidth() / 2.0f, mPaint);
-//        mPaint.setXfermode(null);
-//        canvas.restoreToCount(count);
+    private void clipDrawable() {
+        Bitmap bitmap = ImageUtil.translateDrawableToBitmap(mOriginDrawable);
+        if (bitmap == null) {
+            return;
+        }
+        bitmap = clipToRoundBitmap(bitmap);
+        mSrcBitmap = bitmap;
+        isInternalCall = true;
+        setImageBitmap(bitmap);
     }
-    private Bitmap scaleBitmap(Bitmap bitmap) {
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
+    private void drawableScaleToMatchParent() {
+        if (mSrcBitmap == null) {
+            return;
+        }
+        int width = mSrcBitmap.getWidth();
+        int height = mSrcBitmap.getHeight();
 
         // scale
         float widthRatio = (float) getWidth() / width;
         float heightRatio = (float) getHeight() / height;
 
         float maxRatio = Math.max(widthRatio, heightRatio);
-        Matrix matrix = new Matrix();
+        Matrix matrix = getImageMatrix();
         matrix.reset();
         int diffWidth = getWidth() - width;
         int diffHeight = getHeight() - height;
         matrix.postScale(maxRatio, maxRatio, width / 2.0f, height / 2.0f);
         matrix.postTranslate(diffWidth / 2.0f, diffHeight / 2.0f);
-        Bitmap result = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
-        return result;
+        setImageMatrix(matrix);
     }
 
-    public Bitmap toRoundBitmap(Bitmap bitmap) {
+    @Override
+    protected void onDraw(Canvas canvas) {
+        drawableScaleToMatchParent();
+        super.onDraw(canvas);
+        float radius = getWidth() / 2.0f - strokeWidth / 2.0f;
+        canvas.drawCircle(getWidth() / 2.0f, getHeight() / 2.0f, radius, mPaint);
+    }
+
+    public Bitmap clipToRoundBitmap(Bitmap bitmap) {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
-        float roundPx;
-        float left, top, right, bottom, dst_left, dst_top, dst_right, dst_bottom;
-        if (width <= height) {
-            roundPx = width / 2;
-            left = 0;
-            top = 0;
-            right = width;
-            bottom = width;
-            height = width;
-            dst_left = 0;
-            dst_top = 0;
-            dst_right = width;
-            dst_bottom = width;
-        } else {
-            roundPx = height / 2;
-            float clip = (width - height) / 2;
-            left = clip;
-            right = width - clip;
-            top = 0;
-            bottom = height;
-            width = height;
-            dst_left = 0;
-            dst_top = 0;
-            dst_right = height;
-            dst_bottom = height;
-        }
-
-        Bitmap output = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        int squareWidth = Math.min(width, height);
+        float radius = squareWidth / 2.0f;
+        Bitmap output = Bitmap.createBitmap(
+                squareWidth, squareWidth, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(output);
 
-        final int color = 0xff424242;
         final Paint paint = new Paint();
-        final Rect src = new Rect((int) left, (int) top, (int) right, (int) bottom);
-        final Rect dst = new Rect((int) dst_left, (int) dst_top, (int) dst_right, (int) dst_bottom);
-        final RectF rectF = new RectF(dst);
+        int srcLeft = 0;
+        int srcRight = squareWidth;
+        int srcTop = 0;
+        int srcBottom = squareWidth;
+        float diff = Math.abs(width - height) / 2.0f;
+        if (width > height) {
+            srcLeft = (int) diff;
+            srcRight = srcLeft + squareWidth;
+        } else {
+            srcTop = (int) diff;
+            srcBottom = srcTop + squareWidth;
+        }
+        final Rect src = new Rect(srcLeft , srcTop, srcRight, srcBottom);
+        final Rect dst = new Rect(0, 0, squareWidth, squareWidth);
 
-        paint.setAntiAlias(true);// 设置画笔无锯齿
-
-        canvas.drawARGB(0, 0, 0, 0); // 填充整个Canvas
-        //paint.setColor(color);
-
-        canvas.drawCircle(roundPx, roundPx, roundPx, paint);
-
+        paint.setAntiAlias(true);
+        canvas.drawCircle(squareWidth / 2.0f, squareWidth / 2.0f, radius, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, src, dst, paint);
 
         return output;
     }
+
 }
