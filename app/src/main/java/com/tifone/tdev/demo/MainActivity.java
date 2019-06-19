@@ -2,10 +2,12 @@ package com.tifone.tdev.demo;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +15,9 @@ import android.widget.Button;
 
 import com.tifone.tdev.demo.blurimg.BlurImageDemoActivity;
 import com.tifone.tdev.demo.component.seekbar.SeekBarLayoutActivity;
+import com.tifone.tdev.demo.eventbus.EventBusDemoActivity;
 import com.tifone.tdev.demo.fm.channel.ChannelDemoActivity;
+import com.tifone.tdev.demo.gflipui.GflipUiDemoActivity;
 import com.tifone.tdev.demo.nestedview.NestViewDemoActivity;
 
 import java.util.ArrayList;
@@ -22,7 +26,7 @@ import java.util.List;
 public class MainActivity extends Activity {
     private List<Target> mTargetList = new ArrayList<>();
     private RecyclerView mRecyclerView;
-    private final int focusIndex = 3;
+    private final int focusIndex = 5;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,16 +34,25 @@ public class MainActivity extends Activity {
         mRecyclerView = findViewById(R.id.demo_recycler_view);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         mRecyclerView.setAdapter(createAdapter());
+
     }
     private DemoAdapter createAdapter() {
         buildTargets();
         return new DemoAdapter(mTargetList);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
     private void buildTargets() {
         addTarget("Tips SeekBar", SeekBarLayoutActivity.class);
-        addTarget("FM channel demo", ChannelDemoActivity.class);
+        addTarget("FM channel demo", ChannelDemoActivity.class); // 1
         addTarget("Nested scroll view", NestViewDemoActivity.class);
         addTarget("Blur demo", BlurImageDemoActivity.class);
+        addTarget("EventBus", EventBusDemoActivity.class);
+        addTarget("Gfilp ui demo", GflipUiDemoActivity.class); // 5
     }
     private void addTarget(String name, Class clazz) {
         mTargetList.add(createTarget(name, clazz));
@@ -62,7 +75,8 @@ public class MainActivity extends Activity {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull MyHolder myHolder, int i) {
+        public void onBindViewHolder(@NonNull final MyHolder myHolder, final int i) {
+            Log.d("tifone", "bindview : " + i);
             final Target target = mTargets.get(i);
             myHolder.button.setText(target.name);
             myHolder.button.setOnClickListener(new View.OnClickListener() {

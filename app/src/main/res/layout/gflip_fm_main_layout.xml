@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_black"
+    android:orientation="vertical">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        style="@style/ToolbarStyle"
+        android:layout_height="@dimen/toolbar_height"
+        app:contentInsetStart="-10dp"
+        app:titleTextAppearance="@style/ToolbarTitleStyle"/>
+    <RelativeLayout
+        android:id="@+id/freq_controller"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
+        android:layout_marginTop="16dp">
+        <Button
+            android:id="@+id/prev_freq"
+            android:layout_width="48dp"
+            android:layout_height="72dp"
+            android:layout_marginStart="48dp"
+            android:rotation="180"
+            android:background="@drawable/ic_prev_button"/>
+        <TextView
+            android:id="@+id/freq_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/color_gray_light"
+            android:textStyle="bold"
+            android:textSize="32sp"
+            android:text="89.5"/>
+
+        <Button
+            android:id="@+id/next_freq"
+            android:layout_width="48dp"
+            android:layout_height="72dp"
+            android:layout_marginEnd="48dp"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/ic_prev_button" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/freq_text"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/color_gray_light"
+            android:layout_centerHorizontal="true"
+            android:textStyle="bold"
+            android:text="@string/channel_text"
+            android:textSize="26sp"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/button_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/stop"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_item_height"
+            android:layout_marginTop="24dp"
+            style="@style/ButtonStyle"
+            android:text="@string/stop_text"/>
+        <Button
+            android:id="@+id/favourite_stations"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_item_height"
+            android:layout_marginTop="10dp"
+            style="@style/ButtonStyle"
+            android:text="@string/favorite_stations_text"/>
+        <Button
+            android:id="@+id/speaker"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_item_height"
+            android:layout_marginTop="10dp"
+            style="@style/ButtonStyle"
+            android:text="@string/speaker_on_off_text" />
+        <Button
+            android:id="@+id/add_favourite"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_item_height"
+            android:layout_marginTop="10dp"
+            style="@style/ButtonStyle"
+            android:text="@string/add_as_favorite_text" />
+    </LinearLayout>
+
+
+</RelativeLayout>

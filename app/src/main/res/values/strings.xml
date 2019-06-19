@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">tdev-demo</string>
+    <string name="gfilp_fm_title">FM Radio</string>
+    <string name="stop_text">Stop</string>
+    <string name="favorite_stations_text">Favorite Stations</string>
+    <string name="speaker_on_off_text">Speaker (%s)</string>
+    <string name="add_as_favorite_text">Add as Favorite</string>
+    <string name="channel_text">Channel</string>
 </resources>

@@ -3,4 +3,14 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="color_black">#000</color>
+    <color name="color_gray_coal">#4A4A4A</color>
+    <color name="color_gray_light">#ADACAC</color>
+    <color name="color_magenta">#DB0962</color>
+    <color name="color_purple">#6E298D</color>
+    <color name="color_white">#FFFFFF</color>
+    <color name="color_yellow">#FBB040</color>
+    <color name="color_yellow_light">#FEFADD</color>
+    <color name="primary_color_scroll">#FEB24A</color>
+    <color name="warning_extreme">#AE001B</color>
 </resources>
